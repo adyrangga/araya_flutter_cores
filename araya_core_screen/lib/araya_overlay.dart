@@ -21,6 +21,7 @@ class ArayaOverlay extends StatelessWidget {
       child: Stack(
         children: [
           GestureDetector(
+            key: const Key('arayaOverlayBarrier'),
             onTap: barrierDismissible ? () => Navigator.pop(context) : null,
             child: Container(
               width: double.infinity,
@@ -40,8 +41,10 @@ class ArayaOverlay extends StatelessWidget {
 ///
 /// to close this overlay use Navigator.pop.
 class ArayaOverlayLoading extends StatelessWidget {
-  const ArayaOverlayLoading({Key? key, this.loadingDismissible = false})
-      : super(key: key);
+  const ArayaOverlayLoading({
+    Key? key,
+    this.loadingDismissible = false,
+  }) : super(key: key);
 
   final bool loadingDismissible;
 
@@ -50,8 +53,9 @@ class ArayaOverlayLoading extends StatelessWidget {
     return ArayaOverlay(
       childBuilder: (cContext) => Center(
         child: GestureDetector(
+          key: const Key('spinnerTapDetector'),
           onTap: loadingDismissible ? () => Navigator.pop(context) : null,
-          child: const CircularProgressIndicator(),
+          child: const CircularProgressIndicator(key: Key('spinner')),
         ),
       ),
     );
@@ -69,6 +73,7 @@ class ArayaSnackBar {
         height: double.infinity,
         child: Center(
           child: CircularProgressIndicator(
+            key: const Key('spinner'),
             color: Theme.of(context).primaryColor,
           ),
         ),
