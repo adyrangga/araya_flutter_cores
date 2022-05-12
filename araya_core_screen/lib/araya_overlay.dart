@@ -1,6 +1,9 @@
 library araya_core_screen;
 
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+
+import 'araya_core_screen.dart';
 
 /// Create fullscreen overlay use endDrawer attribute of Scaffold
 ///
@@ -59,6 +62,134 @@ class ArayaOverlayLoading extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+/// create custom overlay card container modal-like.
+class ArayaCardModal extends StatelessWidget with ArayaCoreScreenImpl {
+  const ArayaCardModal({
+    required Key key,
+    this.width = 0,
+    this.title = '',
+    required this.children,
+    this.actions,
+    this.alignActions = MainAxisAlignment.end,
+  }) : super(key: key);
+
+  final double width;
+  final String title;
+  final List<Widget> children;
+  final List<Widget>? actions;
+  final MainAxisAlignment alignActions;
+
+  @override
+  Widget build(BuildContext context) {
+    ScreenSize screenSize = super.buildScreenSize(context);
+    return ArayaOverlay(
+      childBuilder: (context) => Semantics(
+        label: '$title modals',
+        container: true,
+        child: SizedBox(
+          child: Align(
+            child: Material(
+              borderRadius: BorderRadius.circular(8.0),
+              elevation: 8,
+              child: Container(
+                key: key,
+                constraints: BoxConstraints(
+                  minWidth: 100,
+                  maxWidth: _setupMaxWidth(screenSize),
+                ),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [_buildHeader(context), _buildBody(context)],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader(BuildContext context) => Container(
+        decoration: BoxDecoration(
+            color: Theme.of(context).primaryColor,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(8.0),
+              topRight: Radius.circular(8.0),
+            )),
+        padding: const EdgeInsets.fromLTRB(12, 8, 7, 8),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              title,
+              semanticsLabel: title,
+              style: Theme.of(context)
+                  .primaryTextTheme
+                  .headline6
+                  ?.copyWith(fontSize: 16),
+            ),
+            Container(
+              margin: const EdgeInsets.only(left: 8.0),
+              child: InkWell(
+                key: const Key('closeArayaCardModal'),
+                onTap: () => Navigator.pop(context),
+                child: Icon(
+                  Icons.close_rounded,
+                  size: 18,
+                  color: Theme.of(context).primaryIconTheme.color,
+                  semanticLabel: 'close modal icons',
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+
+  /// create content body
+  Widget _buildBody(BuildContext context) => Container(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [...children, _buildActions(context)],
+        ),
+      );
+
+  /// typically create buttons
+  Widget _buildActions(BuildContext context) {
+    if (actions == null) return const SizedBox();
+
+    return Flexible(
+      child: Row(
+        mainAxisAlignment: alignActions,
+        children: actions!
+            .mapIndexed((index, element) => Padding(
+                  padding: EdgeInsets.only(left: index > 0 ? 8.0 : 0.0),
+                  child: element,
+                ))
+            .toList(),
+      ),
+    );
+  }
+
+  /// determine width of this widget.
+  ///
+  /// if [width] greater than screenSize.width * 0.9
+  /// then return screenSize.width * 0.9.
+  ///
+  /// if [width] less 200 then return 200
+  double _setupMaxWidth(ScreenSize screenSize) {
+    if (width > 0 && width < 200) return 200;
+    if (width > 0 && width <= screenSize.width * 0.9) return width;
+    return screenSize.width * 0.9;
   }
 }
 
