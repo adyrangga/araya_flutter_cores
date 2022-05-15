@@ -10,93 +10,87 @@ import 'package:shared_preferences/shared_preferences.dart';
 ///
 /// Wraps platform-specific persistent storage for simple data
 /// (NSUserDefaults on iOS and macOS, SharedPreferences on Android, etc.).
-class ArayaCorePrefs {
-  static late SharedPreferences _prefs;
+class SharedPrefs {
+  static SharedPreferences? _sharedPrefs;
 
-  /// for general purpose use.
-  SharedPreferences get prefs => _prefs;
+  factory SharedPrefs() => SharedPrefs._internal();
 
-  /// please initialize SharedPreferences on runApp function.
-  /// so app can used globally.
-  static Future<SharedPreferences> getInstance() async {
-    _prefs = await SharedPreferences.getInstance();
-    return _prefs;
+  SharedPrefs._internal();
+
+  /// initialize SharedPreferences.
+  /// call on main() before runApp.
+  Future<SharedPreferences> init() async {
+    _sharedPrefs ??= await SharedPreferences.getInstance();
+    return _sharedPrefs!;
   }
 
-  /// get boolean value by prefs key
-  static bool getBool(String appPrefsKeys) {
-    return _prefs.getBool(appPrefsKeys) ?? false;
-  }
+  bool? getBool(String key) => _sharedPrefs?.getBool(key);
 
-  /// set boolean value by prefs key
-  static Future<bool> setBool(String appPrefsKeys, bool value) {
-    return _prefs.setBool(appPrefsKeys, value);
-  }
+  double? getDouble(String key) => _sharedPrefs?.getDouble(key);
 
-  /// get String value by prefs key
-  static String? getString(String appPrefsKeys) {
-    return _prefs.getString(appPrefsKeys);
-  }
+  int? getInt(String key) => _sharedPrefs?.getInt(key);
 
-  /// set String value by prefs key
-  static Future<bool> setString(String appPrefsKeys, String value) {
-    return _prefs.setString(appPrefsKeys, value);
-  }
+  String? getString(String key) => _sharedPrefs?.getString(key);
 
-  /// get int value by prefs key
-  static int? getInt(String appPrefsKeys) {
-    return _prefs.getInt(appPrefsKeys);
-  }
+  List<String>? getStringList(String key) => _sharedPrefs?.getStringList(key);
 
-  /// set int value by prefs key
-  static Future<bool> setInt(String appPrefsKeys, int value) {
-    return _prefs.setInt(appPrefsKeys, value);
-  }
+  Future<bool> setBool(String key, bool value) =>
+      _sharedPrefs!.setBool(key, value);
 
-  /// get double value by prefs key
-  static double? getDouble(String appPrefsKeys) {
-    return _prefs.getDouble(appPrefsKeys);
-  }
+  Future<bool> setDouble(String key, double value) =>
+      _sharedPrefs!.setDouble(key, value);
 
-  /// set double value by prefs key
-  static Future<bool> setDouble(String appPrefsKeys, double value) {
-    return _prefs.setDouble(appPrefsKeys, value);
+  Future<bool> setInt(String key, int value) =>
+      _sharedPrefs!.setInt(key, value);
+
+  Future<bool> setString(String key, String value) =>
+      _sharedPrefs!.setString(key, value);
+
+  Future<bool> setStringList(String key, List<String> value) =>
+      _sharedPrefs!.setStringList(key, value);
+
+  /// remove spesific value by key. if key null, clear all value.
+  Future<bool> clear([String? key]) {
+    if (key == null) return _sharedPrefs!.clear();
+    return _sharedPrefs!.remove(key);
   }
 
   //
   // current apps ThemeMode sections.
   //
-  static String get themeModeKey => 'themeModeKey';
+  String get themeModeKey => 'themeModeKey';
 
-  static ThemeMode _themeModeByCode() {
-    int code = _prefs.getInt(themeModeKey) ?? 0;
+  /// get current app ThemeMode.
+  /// 0: ThemeMode.system. 1: ThemeMode.light. 2: ThemeMode.dark.
+  ///
+  /// part of current apps ThemeMode sections.
+  ThemeMode get getThemeMode {
+    int code = _sharedPrefs?.getInt(themeModeKey) ?? 0;
     ThemeMode themeMode = ThemeMode.system;
     if (code == 1) themeMode = ThemeMode.light;
     if (code == 2) themeMode = ThemeMode.dark;
     return themeMode;
   }
 
-  /// get current app ThemeMode:
-  /// 0: ThemeMode.system. 1: ThemeMode.light. 2: ThemeMode.dark
-  static ThemeMode get getThemeMode => _themeModeByCode();
-
-  /// set selected themeMode value
-  static Future<bool> setThemeMode(ThemeMode themeMode) {
+  /// set selected themeMode value.
+  ///
+  /// part of current apps ThemeMode sections.
+  Future<bool> setThemeMode(ThemeMode themeMode) async {
     int themeModeCode = 0;
     if (themeMode == ThemeMode.light) themeModeCode = 1;
     if (themeMode == ThemeMode.dark) themeModeCode = 2;
-    return _prefs.setInt(themeModeKey, themeModeCode);
+    return (await init()).setInt(themeModeKey, themeModeCode);
   }
 }
 
 /// Application theme mode changes notifier.
 ///
-/// current app theme store on localstorage too.
-class ArayaCoreThemeNotifier with ChangeNotifier, DiagnosticableTreeMixin {
+/// current app theme store on localStorage too.
+class ArayaThemeProvider with ChangeNotifier, DiagnosticableTreeMixin {
   ThemeMode _appThemeMode = ThemeMode.system;
 
   ThemeMode get appThemeMode {
-    _appThemeMode = ArayaCorePrefs.getThemeMode;
+    _appThemeMode = SharedPrefs().getThemeMode;
     return _appThemeMode;
   }
 
@@ -113,7 +107,7 @@ class ArayaCoreThemeNotifier with ChangeNotifier, DiagnosticableTreeMixin {
 
   void setAppThemeMode(ThemeMode themeMode) async {
     _appThemeMode = themeMode;
-    await ArayaCorePrefs.setThemeMode(themeMode);
+    await SharedPrefs().setThemeMode(themeMode);
     notifyListeners();
   }
 
