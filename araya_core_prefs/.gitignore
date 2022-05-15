@@ -31,3 +31,6 @@ build/
 # Flutter plugin generated
 .flutter-plugins
 .flutter-plugins-dependencies
+
+# unittest coverage
+/coverage
