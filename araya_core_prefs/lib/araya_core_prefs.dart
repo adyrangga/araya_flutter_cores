@@ -89,8 +89,12 @@ class SharedPrefs {
 class ArayaThemeProvider with ChangeNotifier, DiagnosticableTreeMixin {
   ThemeMode _appThemeMode = ThemeMode.system;
 
-  ThemeMode get appThemeMode {
+  ThemeMode appThemeMode(BuildContext context) {
     _appThemeMode = SharedPrefs().getThemeMode;
+    if (_appThemeMode == ThemeMode.dark ||
+        Theme.of(context).brightness == Brightness.dark) {
+      _appThemeMode = ThemeMode.dark;
+    }
     return _appThemeMode;
   }
 
