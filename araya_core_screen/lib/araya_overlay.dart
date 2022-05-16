@@ -92,8 +92,8 @@ class ArayaCardModal extends StatelessWidget with ArayaCoreScreenImpl {
         child: SizedBox(
           child: Align(
             child: Material(
-              borderRadius: BorderRadius.circular(8.0),
-              elevation: 8,
+              borderRadius: BorderRadius.circular(6.0),
+              elevation: 3,
               child: Container(
                 key: key,
                 constraints: BoxConstraints(
@@ -107,7 +107,10 @@ class ArayaCardModal extends StatelessWidget with ArayaCoreScreenImpl {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
-                  children: [_buildHeader(context), _buildBody(context)],
+                  children: [
+                    _buildHeader(context),
+                    _buildBody(context),
+                  ],
                 ),
               ),
             ),
@@ -118,11 +121,12 @@ class ArayaCardModal extends StatelessWidget with ArayaCoreScreenImpl {
   }
 
   Widget _buildHeader(BuildContext context) => Container(
+        height: 46.0,
         decoration: BoxDecoration(
             color: Theme.of(context).primaryColor,
             borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(8.0),
-              topRight: Radius.circular(8.0),
+              topLeft: Radius.circular(6.0),
+              topRight: Radius.circular(6.0),
             )),
         padding: const EdgeInsets.fromLTRB(12, 8, 7, 8),
         child: Row(
@@ -134,7 +138,7 @@ class ArayaCardModal extends StatelessWidget with ArayaCoreScreenImpl {
               style: Theme.of(context)
                   .primaryTextTheme
                   .headline6
-                  ?.copyWith(fontSize: 16),
+                  ?.copyWith(fontSize: 18),
             ),
             Container(
               margin: const EdgeInsets.only(left: 8.0),
@@ -143,7 +147,6 @@ class ArayaCardModal extends StatelessWidget with ArayaCoreScreenImpl {
                 onTap: () => Navigator.pop(context),
                 child: Icon(
                   Icons.close_rounded,
-                  size: 18,
                   color: Theme.of(context).primaryIconTheme.color,
                   semanticLabel: 'close modal icons',
                 ),
