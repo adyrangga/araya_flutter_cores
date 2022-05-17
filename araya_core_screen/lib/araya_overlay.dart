@@ -5,9 +5,7 @@ import 'package:flutter/material.dart';
 
 import 'araya_core_screen.dart';
 
-/// Create fullscreen overlay use endDrawer attribute of Scaffold
-///
-/// to close this overlay use Navigator.pop.
+/// Create base fullscreen overlay
 class ArayaOverlay extends StatelessWidget {
   const ArayaOverlay({
     Key? key,
@@ -40,9 +38,6 @@ class ArayaOverlay extends StatelessWidget {
 }
 
 /// Create fullscreen overlay CircularProgressIndicator,
-/// use endDrawer attribute of Scaffold.
-///
-/// to close this overlay use Navigator.pop.
 class ArayaOverlayLoading extends StatelessWidget {
   const ArayaOverlayLoading({
     Key? key,
@@ -71,14 +66,14 @@ class ArayaCardModal extends StatelessWidget with ArayaCoreScreenImpl {
     required Key key,
     this.width = 0,
     this.title = '',
-    required this.children,
+    required this.body,
     this.actions,
     this.alignActions = MainAxisAlignment.end,
   }) : super(key: key);
 
   final double width;
   final String title;
-  final List<Widget> children;
+  final Widget body;
   final List<Widget>? actions;
   final MainAxisAlignment alignActions;
 
@@ -110,6 +105,7 @@ class ArayaCardModal extends StatelessWidget with ArayaCoreScreenImpl {
                   children: [
                     _buildHeader(context),
                     _buildBody(context),
+                    _buildActions(context),
                   ],
                 ),
               ),
@@ -159,11 +155,7 @@ class ArayaCardModal extends StatelessWidget with ArayaCoreScreenImpl {
   /// create content body
   Widget _buildBody(BuildContext context) => Container(
         padding: const EdgeInsets.all(12.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [...children, _buildActions(context)],
-        ),
+        child: body,
       );
 
   /// typically create buttons
