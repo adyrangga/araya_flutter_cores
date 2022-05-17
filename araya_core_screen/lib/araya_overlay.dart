@@ -163,14 +163,17 @@ class ArayaCardModal extends StatelessWidget with ArayaCoreScreenImpl {
     if (actions == null) return const SizedBox();
 
     return Flexible(
-      child: Row(
-        mainAxisAlignment: alignActions,
-        children: actions!
-            .mapIndexed((index, element) => Padding(
-                  padding: EdgeInsets.only(left: index > 0 ? 8.0 : 0.0),
-                  child: element,
-                ))
-            .toList(),
+      child: Container(
+        padding: const EdgeInsets.all(12.0),
+        child: Row(
+          mainAxisAlignment: alignActions,
+          children: actions!
+              .mapIndexed((index, element) => Padding(
+                    padding: EdgeInsets.only(left: index > 0 ? 8.0 : 0.0),
+                    child: element,
+                  ))
+              .toList(),
+        ),
       ),
     );
   }
